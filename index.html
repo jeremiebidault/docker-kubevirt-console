@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script type="module" crossorigin="anonymous">
+
+            let readQueryVariable = (name, defaultValue) => {
+                const re = new RegExp(".*[?&]"+name+"=([^&#]*)"), match = document.location.href.match(re);
+                if (match) { return decodeURIComponent(match[1]); }
+                return defaultValue;
+            }
+
+            const apiPrefix = "k8s";
+
+            const namespace = readQueryVariable("namespace", "default");
+
+            let request = url => {
+                return new Promise((resolve, reject) => {
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("GET", url);
+                    xhr.onload = () => {
+                        if (xhr.status === 200) {
+                            resolve(xhr.response);
+                        } else {
+                            reject(xhr.statusText);
+                        }
+                    };
+                    xhr.onerror = () => reject(xhr.statusText);
+                    xhr.send();
+                });
+            };
+
+            setInterval(function getVMIs() {
+                console.log(new Date().toString());
+
+                request("/"+apiPrefix+"/apis/kubevirt.io/v1/namespaces/"+namespace+"/virtualmachineinstances/")
+                .then(data => {
+                    let vmis = JSON.parse(data);
+                    let html = "";
+                    vmis.items.forEach(vmi => {
+                        html += `
+                        <tr>
+                            <td>${vmi.metadata.name}</td>
+                            <td>${vmi.status.phase}</td>
+                            <td>${vmi.status.interfaces !== undefined ? vmi.status.interfaces[0].ipAddress : ""}</td>
+                            <td>${vmi.status.nodeName !== undefined ? vmi.status.nodeName : ""}</td>
+                            <td><button class="button" ${vmi.status.phase =="Running" ? "" : "disabled"} onclick="window.open('window.html?path=${apiPrefix}/apis/subresources.kubevirt.io/v1/namespaces/${namespace}/virtualmachineinstances/${vmi.metadata.name}/vnc', 'novnc_window', 'resizable=yes,toolbar=no,location=no,status=no,scrollbars=no,menubar=no,width=1030,height=800')">VNC</button></td>
+                        </tr>
+                        `;
+                    });
+                    document.getElementById("vmis").innerHTML = html;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+
+                return getVMIs;
+            }(), 2000);
+
+        </script>
+    </head>
+    <body>
+        <table>
+            <tbody id="vmis"></tbody>
+        </table>
+        <div id="screen"></div>
+    </body>
+</html>
+
+<!--
+kubectl proxy --address=[::] --accept-hosts=^.*$ --www=/home/coder/kubevirt/ --www-prefix=/ --api-prefix=/k8s/
+http://localhost:8001/k8s/apis/kubevirt.io/v1/namespaces/default/virtualmachineinstances
+http://localhost:8001/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1/namespaces/default/virtualmachineinstances/windows-installer/vnc
+-->
