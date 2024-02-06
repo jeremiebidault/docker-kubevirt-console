@@ -6,7 +6,7 @@ RUN apk add \
 
 RUN git clone --branch v1.4.0 --depth 1 https://github.com/novnc/noVNC /app
 
-COPY index.html windows.html /app/
+COPY index.html window.html /app/
 
 ENTRYPOINT ["kubectl"]
 
