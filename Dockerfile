@@ -6,8 +6,8 @@ RUN apk add \
 
 RUN git clone --branch v1.4.0 --depth 1 https://github.com/novnc/noVNC /app
 
-COPY . /app/
+COPY index.html windows.html /app/
 
 ENTRYPOINT ["kubectl"]
 
-CMD ["proxy", "--accept-hosts=^.*$", "--address=[::]", "--api-prefix=/k8s/", "--www=/app/", "--www-prefix=/"]
+CMD ["proxy", "--address=0.0.0.0", "--port=9000", "--www=/app/", "--www-prefix=/", "--api-prefix=/k8s/"]

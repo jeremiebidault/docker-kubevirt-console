@@ -1,15 +1,15 @@
 ## example for vm named "windows-11" in "default" namespace
 
 ```sh
-docker run -it --rm --name kubevirt console -v ~/.kube/config:~/.kube/config aarto/kubevirt-console:1.4.0-alpine bash
+docker run -it --rm --name kubevirt console -v ~/.kube/config:~/.kube/config --entrypoint "" aarto/kubevirt-console:1.4.0-alpine sh
 
-kubectl proxy --address=[::] --accept-hosts=^.*$ --www=/noVNC/ --www-prefix=/ --api-prefix=/k8s/
+kubectl proxy --address=0.0.0.0 --port=9000 --www=/app/ --www-prefix=/ --api-prefix=/k8s/
 ```
 
 browse to
 
-http://localhost:8001/k8s/apis/kubevirt.io/v1/namespaces/default/virtualmachineinstances
-http://localhost:8001/window.html?path=k8s/apis/subresources.kubevirt.io/v1/namespaces/default/virtualmachineinstances/windows-11/vnc
+http://localhost:9000/k8s/apis/kubevirt.io/v1/namespaces/default/virtualmachineinstances
+http://localhost:9000/window.html?path=k8s/apis/subresources.kubevirt.io/v1/namespaces/default/virtualmachineinstances/windows-11/vnc
 
 ## manifest
 
@@ -77,7 +77,7 @@ metadata:
   namespace: kubevirt-console
 spec:
   ports:
-    - port: 8001
+    - port: 9000
   selector:
     app: kubevirt-console
 
@@ -109,11 +109,11 @@ spec:
               memory: "128Mi"
               cpu: "200m"
           ports:
-            - containerPort: 8001
+            - containerPort: 9000
               name: http
           livenessProbe:
             httpGet:
-              port: 8001
+              port: 9000
               path: /
               scheme: HTTP
             failureThreshold: 30
@@ -122,3 +122,11 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
 ```
+
+## expose svc
+
+```sh
+kubectl -n kubevirt-console port-forward svc/kubevirt-console 9000:9000
+```
+
+browse to http://localhost:9000/?namespace=default
