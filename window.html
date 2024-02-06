@@ -21,7 +21,7 @@
         </style>
 
         <script type="module" crossorigin="anonymous">
-            import RFB from './node_modules/@novnc/novnc/core/rfb.js';
+            import RFB from './core/rfb.js';
 
             let readQueryVariable = (name, defaultValue) => {
                 const re = new RegExp(".*[?&]"+name+"=([^&#]*)"), match = document.location.href.match(re);
@@ -44,12 +44,10 @@
             url += "://"+host;
             if (port) { url += ":"+port; }
             url += "/"+path;
-
             console.log(url)
-            // ws://localhost:8001/k8s/apis/subresources.kubevirt.io/v1/namespaces/default/virtualmachineinstances/windows-installer-bios/vnc
 
             // RFB
-            rfb = new RFB(document.getElementById('screen'), url, { credentials: { password: password } });
+            rfb = new RFB(document.getElementById('vmi'), url, { credentials: { password: password } });
             rfb.addEventListener("desktopname", (e) => {
                 desktopName = e.detail.name;
                 console.log(desktopName)
@@ -58,7 +56,7 @@
                 console.log("Connected to "+desktopName);
             });
             rfb.addEventListener("disconnect", (e) => {
-                console.log(e.detail.clean ? "Disconnected" : "Something went wrong, connection is closed");
+                console.log(e.detail.clean ? "Disconnected" : "Something went wrong, connection closed");
             });
             rfb.viewOnly = readQueryVariable('view_only', false);
             rfb.scaleViewport = readQueryVariable('scale', false);
@@ -71,6 +69,6 @@
     </head>
 
     <body>
-        <div id="screen"></div>
+        <div id="vmi"></div>
     </body>
 </html>
