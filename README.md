@@ -3,7 +3,7 @@
 ```sh
 docker run -it --rm --name kubevirt console -v ~/.kube/config:~/.kube/config --entrypoint "" aarto/kubevirt-console:1.4.0-alpine sh
 
-kubectl proxy --address=0.0.0.0 --port=9000 --www=/app/ --www-prefix=/ --api-prefix=/k8s/
+kubectl proxy --address=[::] --port=9000 --accept-hosts=^.*$ --www=/app/ --www-prefix=/ --api-prefix=/k8s/
 ```
 
 browse to
@@ -126,7 +126,7 @@ spec:
 ## expose svc
 
 ```sh
-kubectl -n kubevirt-console port-forward svc/kubevirt-console 9000:9000
+kubectl -n kubevirt-console port-forward svc/kubevirt-console 3000:9000
 ```
 
 browse to http://localhost:9000/?namespace=default
