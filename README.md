@@ -3,7 +3,7 @@
 ```sh
 docker run -it --rm --name kubevirt console -v ~/.kube/config:~/.kube/config --entrypoint "" aarto/kubevirt-console:1.4.0-alpine sh
 
-kubectl proxy --address=[::] --port=9000 --accept-hosts=^.*$ --www=/app/ --www-prefix=/ --api-prefix=/k8s/
+kubectl proxy --address=[::] --port=9000 --www=/app/ --www-prefix=/ --api-prefix=/k8s/
 ```
 
 browse to
@@ -101,6 +101,7 @@ spec:
       containers:
         - name: novnc
           image: aarto/kubevirt-console:1.4.0-alpine
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "64Mi"

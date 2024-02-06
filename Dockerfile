@@ -10,4 +10,4 @@ COPY index.html window.html /app/
 
 ENTRYPOINT ["kubectl"]
 
-CMD ["proxy", "--address=[::]", "--port=9000", "--accept-hosts=^.*$", "--www=/app/", "--www-prefix=/", "--api-prefix=/k8s/"]
+CMD ["proxy", "--address=[::]", "--port=9000", "--www=/app/", "--www-prefix=/", "--api-prefix=/k8s/"]
