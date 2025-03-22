@@ -4,7 +4,7 @@ RUN apk add \
     git \
     kubectl
 
-RUN git clone --branch v1.4.0 --depth 1 https://github.com/novnc/noVNC /app
+RUN git clone --branch v1.6.0 --depth 1 https://github.com/novnc/noVNC /app
 
 COPY index.html window.html /app/
 
