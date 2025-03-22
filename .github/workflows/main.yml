@@ -31,4 +31,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/kubevirt-console:1.4.0-alpine
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/kubevirt-console:1.6.0-alpine
